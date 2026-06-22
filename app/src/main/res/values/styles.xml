@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PixelPlay" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#0D0D0D</item>
+        <item name="android:statusBarColor">#080808</item>
+        <item name="android:navigationBarColor">#080808</item>
+        <item name="colorPrimary">#6C63FF</item>
+        <item name="colorAccent">#00D9FF</item>
+    </style>
+
+    <style name="Theme.Splash" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#0D0D0D</item>
+        <item name="android:statusBarColor">#080808</item>
+        <item name="android:navigationBarColor">#080808</item>
+    </style>
+
+    <style name="Theme.Player" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+    </style>
+</resources>

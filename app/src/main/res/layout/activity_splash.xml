@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0D0D">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/splashLogo"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ic_logo"
+            android:alpha="0"
+            android:scaleX="0.6"
+            android:scaleY="0.6" />
+
+        <TextView
+            android:id="@+id/splashTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="PixelPlay"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:alpha="0" />
+
+        <TextView
+            android:id="@+id/splashSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Your Premium Media Experience"
+            android:textColor="#8080A0"
+            android:textSize="14sp"
+            android:alpha="0" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/splashVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:text="v2.0"
+        android:textColor="#505070"
+        android:textSize="12sp"
+        android:alpha="0" />
+</RelativeLayout>
