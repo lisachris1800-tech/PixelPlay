@@ -75,11 +75,6 @@ public class MainActivity extends AppCompatActivity
             setActiveNav(R.id.navSettings);
             Toast.makeText(this, "PixelPlay v2.0", Toast.LENGTH_SHORT).show();
         });
-        findViewById(R.id.browseBtn).setOnClickListener(v -> {
-            Intent i = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-        });
     }
 
     private void setActiveNav(int activeId) {
@@ -126,7 +121,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onReady() {
-        NativeBridge.start();
+        DexLoader.start(this);
         scanVideos();
     }
 

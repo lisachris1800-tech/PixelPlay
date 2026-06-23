@@ -199,7 +199,7 @@ DOWNLOAD = page("Download",
     <div class='f ai g2 mb2'><span class='prim b'>✓</span><span>Offline Download & Play</span></div>
     <div class='f ai g2'><span class='prim b'>✓</span><span>No Ads • No Tracking</span></div>
   </div>
-  <a href='/apk/pixelplay-v2.0.apk' download id='dlBtn' class='btn btn-p glow' style='display:inline-flex'><svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><polyline points='8 17 12 21 16 17'/><line x1='12' y1='12' x2='12' y2='21'/><path d='M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29'/></svg>Download (8 MB)</a>
+  <a href='/apk/pixelplay-v2.0.apk' download id='dlBtn' class='btn btn-p glow' style='display:inline-flex'><svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><polyline points='8 17 12 21 16 17'/><line x1='12' y1='12' x2='12' y2='21'/><path d='M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29'/></svg>Download (6.5 MB)</a>
   <div id='dlMsg' class='dn mt4 t14' style='color:#00E676'>Download started! Open the APK to install.</div>
   <a href='/' class='db mt6 tm t14' style='color:#8080A0;text-decoration:none'>← Back to home</a>
 </div></div>
