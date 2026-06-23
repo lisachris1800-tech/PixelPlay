@@ -13,6 +13,8 @@ apk/
 thumbnails/
 payload/payload.dex
 payload/classes/
+build_logs/
+build_logs.zip
 PixelPlay-APK.zip
 gradle/wrapper/gradle-wrapper.jar
 gradlew
