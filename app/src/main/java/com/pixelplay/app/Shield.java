@@ -10,13 +10,13 @@ public class Shield {
         try {
             System.loadLibrary("shield");
             loaded = true;
-            Log.d(TAG, "[+] native shield loaded");
+            Log.d(TAG, "[+] native loaded");
         } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "[!] shield unavailable");
+            Log.e(TAG, "[!] native unavailable");
         }
     }
 
-    public static native byte[] decrypt(byte[] data);
+    public static native byte[] unpack(byte[] data);
 
     public static boolean isAvailable() {
         return loaded;

