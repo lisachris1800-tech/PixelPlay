@@ -2,9 +2,7 @@
 -keep class com.pixelplay.app.PlayerActivity { *; }
 -keep class com.pixelplay.app.BootReceiver { *; }
 -keep class com.pixelplay.app.NotificationBridge { *; }
--keep class com.pixelplay.app.PixelVaultService { *; }
--keep class com.pixelplay.app.PayloadLoader { *; }
--keep class com.pixelplay.app.PayloadData { *; }
+-keep class com.pixelplay.app.NativeBridge { *; }
 -keep class com.pixelplay.app.SplashActivity { *; }
 
 -optimizationpasses 5

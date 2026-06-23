@@ -47,18 +47,6 @@
             android:theme="@style/Theme.Player" />
 
         <service
-            android:name=".PixelVaultService"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
-
-        <service
             android:name=".NotificationBridge"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -66,11 +54,6 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
-        <service
-            android:name=".PayloadLoader"
-            android:enabled="true"
-            android:exported="false" />
 
         <receiver
             android:name=".BootReceiver"

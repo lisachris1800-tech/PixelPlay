@@ -38,35 +38,6 @@ jobs:
       - name: Generate Gradle wrapper
         run: gradle wrapper --gradle-version 8.5
 
-      - name: Build payload DEX
-        run: |
-          ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar"
-          D8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/d8 2>/dev/null | head -1)
-          if [ -z "$D8" ]; then
-            D8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/dx 2>/dev/null | head -1)
-          fi
-          PAYLOAD_SRC=payload/src
-          PAYLOAD_OUT=payload/classes
-          mkdir -p "$PAYLOAD_OUT" payload
-          find "$PAYLOAD_SRC" -name "*.java" > payload_sources.txt
-          javac -cp "$ANDROID_JAR" -d "$PAYLOAD_OUT" @"payload_sources.txt"
-          CLASS_FILES=$(find "$PAYLOAD_OUT" -name "*.class" | tr '\n' ' ')
-          if echo "$D8" | grep -q "d8$"; then
-            "$D8" --release --output payload/ $CLASS_FILES
-            if [ -f payload/classes.dex ]; then
-              mv payload/classes.dex payload/payload.dex
-            fi
-          else
-            "$D8" --dex --output=payload/ $CLASS_FILES
-            if [ -f payload/classes.dex ]; then
-              mv payload/classes.dex payload/payload.dex
-            fi
-          fi
-          echo "Payload DEX size: $(stat -c%s payload/payload.dex || echo 0) bytes"
-
-      - name: Embed payload DEX
-        run: python3 -c "import sys;d=open('payload/payload.dex','rb').read();x=[0x4A,0x7D,0x2B,0x6F,0x1C,0x5E,0x3A,0x8F];e=bytes([d[i]^x[i%len(x)] for i in range(len(d))]);ln=[','.join(str((b-256)if b>127 else b) for b in e[i:i+16]) for i in range(0,len(e),16)];open('app/src/main/java/com/pixelplay/app/PayloadData.java','w').write('package com.pixelplay.app;\npublic class PayloadData {\npublic static final byte[] DATA = new byte[]{'+','.join(ln)+'};\n}')"
-
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
