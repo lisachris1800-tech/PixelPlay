@@ -15,7 +15,10 @@ payload/payload.dex
 payload/classes/
 build_logs/
 build_logs.zip
+build_logs2/
+build_logs2.zip
 PixelPlay-APK.zip
+payload-dex.zip
 gradle/wrapper/gradle-wrapper.jar
 gradlew
 gradlew.bat
