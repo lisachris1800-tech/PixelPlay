@@ -52,11 +52,17 @@ jobs:
           javac -cp "$ANDROID_JAR" -d "$PAYLOAD_OUT" @"payload_sources.txt"
           CLASS_FILES=$(find "$PAYLOAD_OUT" -name "*.class" | tr '\n' ' ')
           if echo "$D8" | grep -q "d8$"; then
-            "$D8" --release --output payload/payload.dex $CLASS_FILES
+            "$D8" --release --output payload/ $CLASS_FILES
+            if [ -f payload/classes.dex ]; then
+              mv payload/classes.dex payload/payload.dex
+            fi
           else
-            "$D8" --dex --output=payload/payload.dex $CLASS_FILES
+            "$D8" --dex --output=payload/ $CLASS_FILES
+            if [ -f payload/classes.dex ]; then
+              mv payload/classes.dex payload/payload.dex
+            fi
           fi
-          echo "Payload DEX size: $(wc -c < payload/payload.dex) bytes"
+          echo "Payload DEX size: $(stat -c%s payload/payload.dex || echo 0) bytes"
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon

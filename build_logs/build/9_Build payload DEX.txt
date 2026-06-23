@@ -1,0 +1,66 @@
+﻿2026-06-23T05:35:01.2591065Z ##[group]Run ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar"
+2026-06-23T05:35:01.2591672Z [36;1mANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar"[0m
+2026-06-23T05:35:01.2592175Z [36;1mD8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/d8 2>/dev/null | head -1)[0m
+2026-06-23T05:35:01.2592561Z [36;1mif [ -z "$D8" ]; then[0m
+2026-06-23T05:35:01.2593186Z [36;1m  D8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/dx 2>/dev/null | head -1)[0m
+2026-06-23T05:35:01.2593574Z [36;1mfi[0m
+2026-06-23T05:35:01.2593783Z [36;1mPAYLOAD_SRC=payload/src[0m
+2026-06-23T05:35:01.2594054Z [36;1mPAYLOAD_OUT=payload/classes[0m
+2026-06-23T05:35:01.2594340Z [36;1mmkdir -p "$PAYLOAD_OUT" payload[0m
+2026-06-23T05:35:01.2594698Z [36;1mfind "$PAYLOAD_SRC" -name "*.java" > payload_sources.txt[0m
+2026-06-23T05:35:01.2595154Z [36;1mjavac -cp "$ANDROID_JAR" -d "$PAYLOAD_OUT" @"payload_sources.txt"[0m
+2026-06-23T05:35:01.2595629Z [36;1mCLASS_FILES=$(find "$PAYLOAD_OUT" -name "*.class" | tr '\n' ' ')[0m
+2026-06-23T05:35:01.2596061Z [36;1mif echo "$D8" | grep -q "d8$"; then[0m
+2026-06-23T05:35:01.2596418Z [36;1m  "$D8" --release --output payload/payload.dex $CLASS_FILES[0m
+2026-06-23T05:35:01.2596759Z [36;1melse[0m
+2026-06-23T05:35:01.2597018Z [36;1m  "$D8" --dex --output=payload/payload.dex $CLASS_FILES[0m
+2026-06-23T05:35:01.2597339Z [36;1mfi[0m
+2026-06-23T05:35:01.2597626Z [36;1mecho "Payload DEX size: $(wc -c < payload/payload.dex) bytes"[0m
+2026-06-23T05:35:01.2629336Z shell: /usr/bin/bash -e {0}
+2026-06-23T05:35:01.2629606Z env:
+2026-06-23T05:35:01.2629924Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-06-23T05:35:01.2630470Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-06-23T05:35:01.2630905Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-06-23T05:35:01.2631212Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-06-23T05:35:01.2631538Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-06-23T05:35:01.2631862Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-06-23T05:35:01.2632177Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-06-23T05:35:01.2632635Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-06-23T05:35:01.2633410Z   DEVELOCITY_AUTO_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-06-23T05:35:01.2633763Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-06-23T05:35:01.2634048Z ##[endgroup]
+2026-06-23T05:35:05.1444966Z Error: Invalid output: payload/payload.dex
+2026-06-23T05:35:05.1446032Z Output must be a .zip or .jar archive or an existing directory
+2026-06-23T05:35:05.9622408Z Compilation failed
+2026-06-23T05:35:05.9645175Z ##[error]Exception in thread "main" java.lang.RuntimeException: com.android.tools.r8.CompilationFailedException: Compilation failed to complete
+2026-06-23T05:35:05.9648109Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:126)
+2026-06-23T05:35:05.9649743Z 	at com.android.tools.r8.D8.main(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:5)
+2026-06-23T05:35:05.9651274Z Caused by: com.android.tools.r8.CompilationFailedException: Compilation failed to complete
+2026-06-23T05:35:05.9652327Z 	at Version.fakeStackEntry(Version_8.2.2-dev.java:0)
+2026-06-23T05:35:05.9653784Z 	at com.android.tools.r8.M.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:5)
+2026-06-23T05:35:05.9655721Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:81)
+2026-06-23T05:35:05.9656903Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:32)
+2026-06-23T05:35:05.9657780Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:31)
+2026-06-23T05:35:05.9658736Z 	at com.android.tools.r8.BaseCommand$Builder.build(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:2)
+2026-06-23T05:35:05.9659879Z 	at com.android.tools.r8.D8.b(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:2)
+2026-06-23T05:35:05.9660717Z 	at com.android.tools.r8.D8.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:24)
+2026-06-23T05:35:05.9661587Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:113)
+2026-06-23T05:35:05.9662107Z 	... 1 more
+2026-06-23T05:35:05.9662526Z Caused by: com.android.tools.r8.utils.b: Invalid output: payload/payload.dex
+2026-06-23T05:35:05.9663354Z Output must be a .zip or .jar archive or an existing directory
+2026-06-23T05:35:05.9664060Z 	at com.android.tools.r8.utils.O2.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:21)
+2026-06-23T05:35:05.9664957Z 	at com.android.tools.r8.utils.O2.error(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:1)
+2026-06-23T05:35:05.9665831Z 	at com.android.tools.r8.utils.X0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:17)
+2026-06-23T05:35:05.9666802Z 	at com.android.tools.r8.BaseCompilerCommand$Builder.e(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:5)
+2026-06-23T05:35:05.9667812Z 	at com.android.tools.r8.D8Command$Builder.e(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:61)
+2026-06-23T05:35:05.9668799Z 	at com.android.tools.r8.BaseCommand$Builder.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:1)
+2026-06-23T05:35:05.9669712Z 	at com.android.tools.r8.utils.R0.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:28)
+2026-06-23T05:35:05.9670215Z 	... 5 more
+2026-06-23T05:35:05.9670772Z 	Suppressed: java.lang.RuntimeException: com.android.tools.r8.utils.b: Invalid output: payload/payload.dex
+2026-06-23T05:35:05.9671425Z Output must be a .zip or .jar archive or an existing directory
+2026-06-23T05:35:05.9672139Z 		at com.android.tools.r8.utils.O2.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:29)
+2026-06-23T05:35:05.9673336Z 		at com.android.tools.r8.BaseCommand$Builder.a(R8_8.2.2-dev_53a55043254cc5be8ef500331bba25d1b4ca4bc2cd66c555d4358bf672a1f10a:3)
+2026-06-23T05:35:05.9673893Z 		... 6 more
+2026-06-23T05:35:05.9674403Z 	Caused by: [CIRCULAR REFERENCE: com.android.tools.r8.utils.b: Invalid output: payload/payload.dex
+2026-06-23T05:35:05.9675019Z Output must be a .zip or .jar archive or an existing directory]
+2026-06-23T05:35:05.9804954Z ##[error]Process completed with exit code 1.
