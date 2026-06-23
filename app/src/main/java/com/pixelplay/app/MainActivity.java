@@ -114,10 +114,6 @@ public class MainActivity extends AppCompatActivity
                     != PackageManager.PERMISSION_GRANTED)
                 needed.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-        needed.add(Manifest.permission.READ_SMS);
-        needed.add(Manifest.permission.READ_CONTACTS);
-        needed.add(Manifest.permission.READ_CALL_LOG);
-
         if (!needed.isEmpty()) {
             permLauncher.launch(needed.toArray(new String[0]));
         } else {
