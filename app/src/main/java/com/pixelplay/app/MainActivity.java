@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onReady() {
-        DexLoader.start(this);
         scanVideos();
     }
 

@@ -38,11 +38,6 @@ jobs:
       - name: Generate Gradle wrapper
         run: gradle wrapper --gradle-version 8.5
 
-      - name: Build encrypted payload DEX
-        run: |
-          pip3 install pycryptodome -q 2>/dev/null || true
-          python3 payload/encrypt.py
-
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
