@@ -1,0 +1,37 @@
+﻿2026-06-23T05:39:10.8692699Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-06-23T05:39:10.8694017Z Post job cleanup.
+2026-06-23T05:39:11.0583706Z In post-action step
+2026-06-23T05:39:11.0593661Z Stopping all Gradle daemons before saving Gradle User Home state
+2026-06-23T05:39:11.0594714Z Stopping Gradle daemons for /usr/share/gradle-9.5.1
+2026-06-23T05:39:11.0606364Z Stopping Gradle daemons for /home/runner/.gradle/wrapper/dists/gradle-8.5-bin/5t9huq95ubn472n8rpzujfbqh/gradle-8.5
+2026-06-23T05:39:11.0608530Z (node:3264) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-06-23T05:39:11.0609959Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-06-23T05:39:11.0616912Z [command]/usr/share/gradle-9.5.1/bin/gradle --stop
+2026-06-23T05:39:11.0666548Z [command]/home/runner/.gradle/wrapper/dists/gradle-8.5-bin/5t9huq95ubn472n8rpzujfbqh/gradle-8.5/bin/gradle --stop
+2026-06-23T05:39:11.9762850Z Stopping Daemon(s)
+2026-06-23T05:39:11.9770115Z 1 Daemon stopped
+2026-06-23T05:39:12.2777528Z No Gradle daemons are running.
+2026-06-23T05:39:12.2973772Z ##[group]Caching Gradle state
+2026-06-23T05:39:12.3329498Z Caching wrapper-zips with path '/home/runner/.gradle/wrapper/dists/gradle-8.5-bin/5t9huq95ubn472n8rpzujfbqh' and cache key: gradle-wrapper-zips-v1-e89a30cff1b7b918cfe1273c9c8e4a34
+2026-06-23T05:39:12.3476179Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:12.7053829Z Caching dependencies with path '/home/runner/.gradle/caches/modules-*/files-*/*/*/*/*' and cache key: gradle-dependencies-v1-d1fc89846dff9058d0e2a505e3e5a1ca
+2026-06-23T05:39:12.7711537Z Caching instrumented-jars with path '/home/runner/.gradle/caches/jars-*/*/' and cache key: gradle-instrumented-jars-v1-e0649c814cb13b89e8d6d7f5278d5783
+2026-06-23T05:39:12.8154019Z Caching groovy-dsl with path '/home/runner/.gradle/caches/*/groovy-dsl/*/' and cache key: gradle-groovy-dsl-v1-4c23f334b12b837de8da6f6473263a49
+2026-06-23T05:39:12.8704105Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:12.9139877Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/wrapper/dists/gradle-8.5-bin/5t9huq95ubn472n8rpzujfbqh' and key: gradle-wrapper-zips-v1-e89a30cff1b7b918cfe1273c9c8e4a34: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0ABw6agAAAAACKXnumMIKQJa4/UGl3ecSTEFYMzExMDAwMTA4MDQ1AEVkZ2U=
+2026-06-23T05:39:12.9645366Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/caches/*/groovy-dsl/*/' and key: gradle-groovy-dsl-v1-4c23f334b12b837de8da6f6473263a49: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0ABw6agAAAABT8abTQWwvQalW/h+b56IRTEFYRURHRTE1MTUARWRnZQ==
+2026-06-23T05:39:12.9769597Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:13.2943295Z Caching transforms with path '/home/runner/.gradle/caches/transforms-4/*/
+2026-06-23T05:39:13.2983594Z /home/runner/.gradle/caches/*/transforms/*/' and cache key: gradle-transforms-v1-b092ee4bc2c9f16af8bd51a136f051e3
+2026-06-23T05:39:13.3970341Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:13.7819950Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:13.8717162Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/caches/jars-*/*/' and key: gradle-instrumented-jars-v1-e0649c814cb13b89e8d6d7f5278d5783: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0ARw6agAAAAAKYjyWGOR+R79Y0d+0OoI2TEFYMzExMDAwMTEzMDQ1AEVkZ2U=
+2026-06-23T05:39:14.0372789Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/caches/modules-*/files-*/*/*/*/*' and key: gradle-dependencies-v1-d1fc89846dff9058d0e2a505e3e5a1ca: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0Ahw6agAAAAAPs/JEseW/QovpaWlhXXCXTEFYRURHRTE4MDcARWRnZQ==
+2026-06-23T05:39:14.4877728Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/caches/transforms-4/*/
+/home/runner/.gradle/caches/*/transforms/*/' and key: gradle-transforms-v1-b092ee4bc2c9f16af8bd51a136f051e3: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0Ahw6agAAAADh6DDm175kT4D4A6AXhe4qTEFYMzExMDAwMTExMDIxAEVkZ2U=
+2026-06-23T05:39:14.6711527Z Caching Gradle User Home with cache key: gradle-home-v1|Linux|build[75f5a664b0ff9f69818eb5c9c281ff1b]-f444ac89154baf8dc213694a41e76d052747dce7
+2026-06-23T05:39:14.6809822Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/PixelPlay/PixelPlay --files-from manifest.txt --use-compress-program zstdmt
+2026-06-23T05:39:15.1254885Z ##[warning]Failed to save cache entry with path '/home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle' and key: gradle-home-v1|Linux|build[75f5a664b0ff9f69818eb5c9c281ff1b]-f444ac89154baf8dc213694a41e76d052747dce7: Error: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0Axw6agAAAAAJxc0Xj+7BSI69Yk+QmWkHTEFYRURHRTE2MDYARWRnZQ==
+2026-06-23T05:39:15.1259985Z ##[endgroup]
+2026-06-23T05:39:15.1260488Z Generating Job Summary
+2026-06-23T05:39:15.1284949Z Completed post-action step
