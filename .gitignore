@@ -14,7 +14,7 @@ thumbnails/
 payload/payload.dex
 payload/classes/
 payload/tmp_classes/
-payload/tmp.dex
+payload/tmp_dex/
 build_logs/
 build_logs.zip
 build_logs2/

