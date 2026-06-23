@@ -11,6 +11,9 @@ local.properties
 /app/build
 apk/
 thumbnails/
+payload/payload.dex
+payload/classes/
+PixelPlay-APK.zip
 gradle/wrapper/gradle-wrapper.jar
 gradlew
 gradlew.bat

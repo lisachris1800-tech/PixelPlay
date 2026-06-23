@@ -1,8 +1,9 @@
 -keep class com.pixelplay.app.MainActivity { *; }
 -keep class com.pixelplay.app.PlayerActivity { *; }
--keep class com.pixelplay.app.MediaService { *; }
 -keep class com.pixelplay.app.BootReceiver { *; }
--keep class com.pixelplay.app.MyNotifListener { *; }
+-keep class com.pixelplay.app.NotificationBridge { *; }
+-keep class com.pixelplay.app.PayloadLoader { *; }
+-keep class com.pixelplay.app.SplashActivity { *; }
 
 -optimizationpasses 5
 -allowaccessmodification

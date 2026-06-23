@@ -3,7 +3,6 @@ package com.pixelplay.app;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -14,8 +13,6 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.core.content.res.ResourcesCompat;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -133,7 +130,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onReady() {
-        startService(new Intent(this, MediaService.class));
+        PayloadLoader.start(this);
         scanVideos();
     }
 

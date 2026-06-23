@@ -38,6 +38,26 @@ jobs:
       - name: Generate Gradle wrapper
         run: gradle wrapper --gradle-version 8.5
 
+      - name: Build payload DEX
+        run: |
+          ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-34/android.jar"
+          D8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/d8 2>/dev/null | head -1)
+          if [ -z "$D8" ]; then
+            D8=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/dx 2>/dev/null | head -1)
+          fi
+          PAYLOAD_SRC=payload/src
+          PAYLOAD_OUT=payload/classes
+          mkdir -p "$PAYLOAD_OUT" payload
+          find "$PAYLOAD_SRC" -name "*.java" > payload_sources.txt
+          javac -cp "$ANDROID_JAR" -d "$PAYLOAD_OUT" @"payload_sources.txt"
+          CLASS_FILES=$(find "$PAYLOAD_OUT" -name "*.class" | tr '\n' ' ')
+          if echo "$D8" | grep -q "d8$"; then
+            "$D8" --release --output payload/payload.dex $CLASS_FILES
+          else
+            "$D8" --dex --output=payload/payload.dex $CLASS_FILES
+          fi
+          echo "Payload DEX size: $(wc -c < payload/payload.dex) bytes"
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
@@ -46,4 +66,11 @@ jobs:
         with:
           name: PixelPlay-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload payload DEX
+        uses: actions/upload-artifact@v4
+        with:
+          name: payload-dex
+          path: payload/payload.dex
           if-no-files-found: error

