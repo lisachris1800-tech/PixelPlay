@@ -79,20 +79,29 @@ def main():
         print(f"FAIL: javac error:\n{r.stderr}")
         sys.exit(1)
 
-    # DEX the compiled classes
+    # DEX the compiled classes (pass individual .class files)
     os.makedirs(TMP_DEX_DIR, exist_ok=True)
+    class_files = []
+    for root, dirs, files in os.walk(TMP_CLASSES):
+        for f in files:
+            if f.endswith(".class"):
+                class_files.append(os.path.join(root, f))
+    if not class_files:
+        print("FAIL: no .class files found")
+        sys.exit(1)
+
     if dexer.endswith("d8"):
-        cmd = [dexer, "--lib", android_jar, "--min-api", "28", "--output", TMP_DEX_DIR, TMP_CLASSES]
+        cmd = [dexer, "--lib", android_jar, "--min-api", "28", "--output", TMP_DEX_DIR] + class_files
     else:
-        cmd = [dexer, "--dex", "--output", TMP_DEX_DIR, TMP_CLASSES]
+        cmd = [dexer, "--dex", "--output", TMP_DEX_DIR] + class_files
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         print(f"FAIL: dexer error:\n{r.stderr}")
         sys.exit(1)
 
-    # Find the generated DEX (d8 outputs a named file like classes.dex)
+    # Find the generated DEX (d8 outputs one or more .dex files)
     dex_file = None
-    for fname in os.listdir(TMP_DEX_DIR):
+    for fname in sorted(os.listdir(TMP_DEX_DIR)):
         if fname.endswith(".dex"):
             dex_file = os.path.join(TMP_DEX_DIR, fname)
             break
